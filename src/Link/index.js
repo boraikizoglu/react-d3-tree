@@ -96,7 +96,7 @@ export default class Link extends React.PureComponent {
           this.link = l;
         }}
         style={{ ...this.state.initialStyle, ...styles }}
-        stroke-dasharray={linkData.target.dashed ? '5,5' : null}
+        strokeDasharray={linkData.target.dashed ? '5,5' : null}
         className="linkBase"
         d={this.drawPath()}
       />
