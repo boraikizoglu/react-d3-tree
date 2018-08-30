@@ -18,6 +18,7 @@ export default class Node extends React.Component {
       initialStyle: {
         opacity: 0,
       },
+      onMouseOver: false,
     };
 
     this.handleClick = this.handleClick.bind(this);
@@ -41,12 +42,13 @@ export default class Node extends React.Component {
     this.applyTransform(transform, nextProps.transitionDuration);
   }
 
-  shouldComponentUpdate(nextProps) {
-    return this.shouldNodeTransform(this.props, nextProps);
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.shouldNodeTransform(this.props, nextProps, this.state, nextState);
   }
 
-  shouldNodeTransform(ownProps, nextProps) {
+  shouldNodeTransform(ownProps, nextProps, ownState, nextState) {
     return (
+      nextState.onMouseOver !== ownState.onMouseOver ||
       nextProps.subscriptions !== ownProps.subscriptions ||
       nextProps.nodeData.x !== ownProps.nodeData.x ||
       nextProps.nodeData.y !== ownProps.nodeData.y ||
@@ -75,18 +77,26 @@ export default class Node extends React.Component {
   }
 
   renderNodeElement(nodeStyle) {
-    const { circleRadius, nodeSvgShape } = this.props;
+    const { circleRadius, nodeSvgShape, onMouseOverItem } = this.props;
+    const { onMouseOver } = this.state;
     /* TODO: DEPRECATE <circle /> */
     if (circleRadius) {
       return <circle r={circleRadius} style={nodeStyle.circle} />;
     }
 
+    const node = React.createElement(nodeSvgShape.shape, {
+      ...nodeStyle.circle,
+      ...nodeSvgShape.shapeProps,
+      onMouseOver: () => this.setState({onMouseOver: true}),
+      onMouseOut: () => this.setState({onMouseOver: false})
+    });
+
     return nodeSvgShape.shape === 'none'
       ? null
-      : React.createElement(nodeSvgShape.shape, {
-          ...nodeStyle.circle,
-          ...nodeSvgShape.shapeProps,
-        });
+      : <g textAnchor="left">
+          {node}
+          {onMouseOver ? onMouseOverItem : null}
+        </g>;
   }
 
   handleClick(evt) {
@@ -127,7 +137,6 @@ export default class Node extends React.Component {
         onMouseOut={this.handleOnMouseOut}
       >
         {this.renderNodeElement(nodeStyle)}
-
         {allowForeignObjects && nodeLabelComponent ? (
           <ForeignObjectElement nodeData={nodeData} nodeSize={nodeSize} {...nodeLabelComponent} />
         ) : (
@@ -142,6 +151,7 @@ Node.defaultProps = {
   nodeLabelComponent: null,
   attributes: undefined,
   circleRadius: undefined,
+  onMouseOverItem: undefined,
   styles: {
     node: {
       circle: {},
@@ -165,6 +175,7 @@ Node.propTypes = {
   transitionDuration: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
   onMouseOver: PropTypes.func.isRequired,
+  onMouseOverItem: PropTypes.object,
   onMouseOut: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
   attributes: PropTypes.object,

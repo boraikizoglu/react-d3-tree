@@ -90,13 +90,14 @@ export default class Link extends React.PureComponent {
 
   render() {
     const { styles, linkData } = this.props;
+    const target = linkData.target.parentEdge;
     return (
       <path
         ref={l => {
           this.link = l;
         }}
-        style={{ ...this.state.initialStyle, ...styles }}
-        strokeDasharray={linkData.target.dashed ? '5,5' : null}
+        style={{ ...this.state.initialStyle, ...styles, ...target.style}}
+        strokeDasharray={target.dashed ? '5,5' : null}
         className="linkBase"
         d={this.drawPath()}
       />

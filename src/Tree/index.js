@@ -457,6 +457,7 @@ export default class Tree extends React.Component {
                 subscriptions={subscriptions}
                 allowForeignObjects={allowForeignObjects}
                 styles={styles.nodes}
+                onMouseOverItem={nodeData.onMouseOverItem}
               />
             ))}
           </NodeWrapper>
