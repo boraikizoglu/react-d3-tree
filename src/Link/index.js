@@ -11,6 +11,7 @@ export default class Link extends React.PureComponent {
       initialStyle: {
         opacity: 0,
       },
+      onMouseOver: false,
     };
   }
 
@@ -88,19 +89,43 @@ export default class Link extends React.PureComponent {
     return this.diagonalPath(linkData, orientation);
   }
 
+  getOnMouseOverItemY(){
+    const { linkData } = this.props;
+    const currentY = linkData.target.y;
+    const parentY = linkData.target.parent.y;
+    return (currentY+parentY)/2;
+  }
+
+  getOnMouseOverItemX(){
+    const { linkData } = this.props;
+    const currentX = linkData.target.x;
+    const parentX = linkData.target.parent.x;
+    return (currentX+parentX)/2;
+  }
+
   render() {
     const { styles, linkData } = this.props;
+    const { onMouseOver } = this.state;
     const target = linkData.target.parentEdge;
+    const onMouseOverItem = linkData.target.parentEdge.onMouseOverItem;
     return (
-      <path
-        ref={l => {
-          this.link = l;
-        }}
-        style={{ ...this.state.initialStyle, ...styles, ...target.style}}
-        strokeDasharray={target.dashed ? '5,5' : null}
-        className="linkBase"
-        d={this.drawPath()}
-      />
+      <g>
+        {onMouseOver && onMouseOverItem ?
+          React.cloneElement(onMouseOverItem, {x: this.getOnMouseOverItemX(), y: this.getOnMouseOverItemY()})
+          : null}
+        <path
+          ref={l => {
+            this.link = l;
+          }}
+          style={{ ...this.state.initialStyle, ...styles, ...target.style}}
+          strokeDasharray={target.dashed ? '5,5' : null}
+          className="linkBase"
+          d={this.drawPath()}
+          strokeWidth="2.5"
+          onMouseOver={() => this.setState({onMouseOver: true})}
+          onMouseLeave={() => this.setState({onMouseOver: false})}
+        />
+      </g>
     );
   }
 }
