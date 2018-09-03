@@ -47,13 +47,17 @@ export default class Node extends React.Component {
     return this.shouldNodeTransform(this.props, nextProps, this.state, nextState);
   }
 
-  shouldNodeTransform(ownProps, nextProps, ownState, nextState) {
+  shouldNodeTransform(ownProps, nextProps) {
     let updateForOnMouseOverItem = false;
-    if(!this.isTransforming && nextProps.nodeData.parent && !nextProps.nodeData.parent._collapsed){
+    if (
+      !this.isTransforming &&
+      nextProps.nodeData.parent &&
+      !nextProps.nodeData.parent._collapsed
+    ) {
       updateForOnMouseOverItem = true;
     }
     return (
-      updateForOnMouseOverItem  ||
+      updateForOnMouseOverItem ||
       nextProps.subscriptions !== ownProps.subscriptions ||
       nextProps.nodeData.x !== ownProps.nodeData.x ||
       nextProps.nodeData.y !== ownProps.nodeData.y ||
@@ -65,15 +69,21 @@ export default class Node extends React.Component {
     return orientation === 'horizontal' ? `translate(${y},${x})` : `translate(${x},${y})`;
   }
 
-  applyTransform(componentWillLeave, transform, transitionDuration, opacity = 1,
-    done = () => this.isTransforming = false,
-    ){
+  applyTransform(
+    componentWillLeave,
+    transform,
+    transitionDuration,
+    opacity = 1,
+    done = () => {
+      this.isTransforming = false;
+    },
+  ) {
     if (transitionDuration === 0) {
       select(this.node)
         .attr('transform', transform)
         .style('opacity', opacity);
     } else {
-      if(componentWillLeave){
+      if (componentWillLeave) {
         this.isTransforming = true;
       }
       select(this.node)
@@ -86,7 +96,7 @@ export default class Node extends React.Component {
   }
 
   renderNodeElement(nodeStyle) {
-    const { circleRadius, nodeSvgShape, onMouseOverItem } = this.props;
+    const { circleRadius, nodeSvgShape, onMouseOverItem, nodeData } = this.props;
     const { onMouseOver } = this.state;
     /* TODO: DEPRECATE <circle /> */
     if (circleRadius) {
@@ -97,14 +107,15 @@ export default class Node extends React.Component {
       ...nodeSvgShape.shapeProps,
       onMouseOver: () => this.handleOnMouseOver(),
       onMouseOut: () => this.handleOnMouseOut(),
+      className: nodeData._children ? 'nodeBase' : 'leafNodeBase',
     });
 
-    return nodeSvgShape.shape === 'none'
-      ? null
-      : <g textAnchor="left">
-          {node}
-          {onMouseOver ? onMouseOverItem : null}
-        </g>;
+    return nodeSvgShape.shape === 'none' ? null : (
+      <g textAnchor="left">
+        {node}
+        {onMouseOver ? onMouseOverItem : null}
+      </g>
+    );
   }
 
   handleClick(evt) {
@@ -112,12 +123,12 @@ export default class Node extends React.Component {
   }
 
   handleOnMouseOver(evt) {
-    this.setState({onMouseOver: true});
+    this.setState({ onMouseOver: true });
     this.props.onMouseOver(this.props.nodeData.id, evt);
   }
 
   handleOnMouseOut(evt) {
-    this.setState({onMouseOver: false});
+    this.setState({ onMouseOver: false });
     this.props.onMouseOut(this.props.nodeData.id, evt);
   }
 
@@ -139,7 +150,6 @@ export default class Node extends React.Component {
           this.node = n;
         }}
         style={this.state.initialStyle}
-        className={nodeData._children ? 'nodeBase' : 'leafNodeBase'}
         transform={this.state.transform}
         onClick={this.handleClick}
         onMouseOut={this.handleOnMouseOut}

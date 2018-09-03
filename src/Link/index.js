@@ -89,42 +89,58 @@ export default class Link extends React.PureComponent {
     return this.diagonalPath(linkData, orientation);
   }
 
-  getOnMouseOverItemY(){
+  getOnMouseOverItemY() {
     const { linkData } = this.props;
     const currentY = linkData.target.y;
     const parentY = linkData.target.parent.y;
-    return (currentY+parentY)/2;
+    return (currentY + parentY) / 2;
   }
 
-  getOnMouseOverItemX(){
+  getOnMouseOverItemX() {
     const { linkData } = this.props;
     const currentX = linkData.target.x;
     const parentX = linkData.target.parent.x;
-    return (currentX+parentX)/2;
+    return (currentX + parentX) / 2;
   }
 
   render() {
     const { styles, linkData } = this.props;
     const { onMouseOver } = this.state;
     const target = linkData.target.parentEdge;
-    const onMouseOverItem = linkData.target.parentEdge.onMouseOverItem;
+    const { onMouseOverItem } = linkData.target.parentEdge;
     return (
       <g>
-        {onMouseOver && onMouseOverItem ?
-          React.cloneElement(onMouseOverItem, {x: this.getOnMouseOverItemX(), y: this.getOnMouseOverItemY()})
+        {onMouseOver && onMouseOverItem
+          ? React.cloneElement(onMouseOverItem, {
+              x: this.getOnMouseOverItemX(),
+              y: this.getOnMouseOverItemY(),
+            })
           : null}
+        {/* Visible path */}
         <path
           ref={l => {
             this.link = l;
           }}
-          style={{ ...this.state.initialStyle, ...styles, ...target.style}}
+          style={{ ...this.state.initialStyle, ...styles, ...target.style }}
           strokeDasharray={target.dashed ? '5,5' : null}
           className="linkBase"
           d={this.drawPath()}
           strokeWidth="2.5"
-          onMouseOver={() => this.setState({onMouseOver: true})}
-          onMouseLeave={() => this.setState({onMouseOver: false})}
         />
+        {/*
+          a trick to make mouseOver easier(it is hard to click the edge since edge is really thin)
+          see: https://stackoverflow.com/questions/18663958/clicking-a-svg-line-its-hard-to-hit-any-ideas-how-to-put-a-click-area-around-a-l
+        */}
+        {onMouseOverItem && (
+          <path
+            style={{ stroke: 'transparent', cursor: onMouseOverItem ? 'pointer' : null }}
+            className="linkBase"
+            d={this.drawPath()}
+            strokeWidth="22"
+            onMouseOver={() => this.setState({ onMouseOver: true })}
+            onMouseLeave={() => this.setState({ onMouseOver: false })}
+          />
+        )}
       </g>
     );
   }
