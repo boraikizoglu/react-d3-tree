@@ -30,7 +30,8 @@ export default class Tree extends React.Component {
     this.findNodesById = this.findNodesById.bind(this);
     this.collapseNode = this.collapseNode.bind(this);
     this.handleNodeToggle = this.handleNodeToggle.bind(this);
-    this.handleOnClickCb = this.handleOnClickCb.bind(this);
+    this.handleOnClickNodeCb = this.handleOnClickNodeCb.bind(this);
+    this.handleOnClickEdgeCb = this.handleOnClickEdgeCb.bind(this);
     this.handleOnMouseOverCb = this.handleOnMouseOverCb.bind(this);
     this.handleOnMouseOutCb = this.handleOnMouseOutCb.bind(this);
   }
@@ -271,7 +272,7 @@ export default class Tree extends React.Component {
         this.collapseNode(targetNode);
       }
       // Lock node toggling while transition takes place
-      this.setState({ data, isTransitioning: true }, () => this.handleOnClickCb(targetNode, evt));
+      this.setState({ data, isTransitioning: true }, () => this.handleOnClickNodeCb(targetNode, evt));
       // Await transitionDuration + 10 ms before unlocking node toggling again
       setTimeout(
         () => this.setState({ isTransitioning: false }),
@@ -279,21 +280,35 @@ export default class Tree extends React.Component {
       );
       this.internalState.targetNode = targetNode;
     } else {
-      this.handleOnClickCb(targetNode, evt);
+      this.handleOnClickNodeCb(targetNode, evt);
     }
   }
 
   /**
-   * handleOnClickCb - Handles the user-defined `onClick` function
+   * handleOnClickNodeCb - Handles the user-defined `onClick` function
    *
    * @param {object} targetNode Description
    *
    * @return {void}
    */
-  handleOnClickCb(targetNode, evt) {
-    const { onClick } = this.props;
-    if (onClick && typeof onClick === 'function') {
-      onClick(clone(targetNode), evt);
+  handleOnClickNodeCb(targetNode, evt) {
+    const { onClickNode } = this.props;
+    if (onClickNode && typeof onClickNode === 'function') {
+      onClickNode(clone(targetNode), evt);
+    }
+  }
+
+  /**
+   * handleOnClickEdgeCb - Handles the user-defined `onClick` function
+   *
+   * @param {object} linkData Description
+   *
+   * @return {void}
+   */
+  handleOnClickEdgeCb(targetNode, evt) {
+    const { onClickEdge } = this.props;
+    if (onClickEdge && typeof onClickEdge === 'function') {
+      onClickEdge(clone(targetNode), evt);
     }
   }
 
@@ -435,6 +450,7 @@ export default class Tree extends React.Component {
                 linkData={linkData}
                 transitionDuration={transitionDuration}
                 styles={styles.links}
+                onClick={this.handleOnClickEdgeCb}
               />
             ))}
 
@@ -475,7 +491,8 @@ Tree.defaultProps = {
     },
   },
   nodeLabelComponent: null,
-  onClick: undefined,
+  onClickNode: undefined,
+  onClickEdge: undefined,
   onMouseOver: undefined,
   onMouseOut: undefined,
   onUpdate: undefined,
@@ -510,7 +527,8 @@ Tree.propTypes = {
     shapeProps: PropTypes.object,
   }),
   nodeLabelComponent: PropTypes.object,
-  onClick: PropTypes.func,
+  onClickNode: PropTypes.func,
+  onClickEdge: PropTypes.func,
   onMouseOver: PropTypes.func,
   onMouseOut: PropTypes.func,
   onUpdate: PropTypes.func,

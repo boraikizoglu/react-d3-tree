@@ -13,6 +13,8 @@ export default class Link extends React.PureComponent {
       },
       onMouseOver: false,
     };
+
+    this.handleClick = this.handleClick.bind(this);
   }
 
   componentDidMount() {
@@ -103,8 +105,13 @@ export default class Link extends React.PureComponent {
     return (currentX + parentX) / 2;
   }
 
+  handleClick(evt){
+    const { linkData: { target: { parentEdge }}} = this.props;
+    this.props.onClick(parentEdge, evt);
+  }
+
   render() {
-    const { styles, linkData } = this.props;
+    const { styles, linkData, onClick } = this.props;
     const { onMouseOver } = this.state;
     const target = linkData.target.parentEdge;
     const { onMouseOverItem } = linkData.target.parentEdge;
@@ -131,7 +138,7 @@ export default class Link extends React.PureComponent {
           a trick to make mouseOver easier(it is hard to click the edge since edge is really thin)
           see: https://stackoverflow.com/questions/18663958/clicking-a-svg-line-its-hard-to-hit-any-ideas-how-to-put-a-click-area-around-a-l
         */}
-        {onMouseOverItem && (
+        {(onMouseOverItem || onClick) && (
           <path
             style={{ stroke: 'transparent', cursor: onMouseOverItem ? 'pointer' : null }}
             className="linkBase"
@@ -139,6 +146,7 @@ export default class Link extends React.PureComponent {
             strokeWidth="22"
             onMouseOver={() => this.setState({ onMouseOver: true })}
             onMouseLeave={() => this.setState({ onMouseOver: false })}
+            onClick={this.handleClick}
           />
         )}
       </g>
