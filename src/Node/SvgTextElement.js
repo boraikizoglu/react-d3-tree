@@ -4,14 +4,14 @@ import PropTypes from 'prop-types';
 
 export default class SvgTextElement extends React.PureComponent {
   render() {
-    const { name, nodeStyle, textLayout, attributes } = this.props;
+    const { name, nodeStyle, textLayout, attributes, nodeSvgShape: { shapeProps: { r }} } = this.props;
     return (
       <g>
         <text
           className="nodeNameBase"
           style={nodeStyle.name}
           textAnchor={textLayout.textAnchor}
-          x={textLayout.x}
+          x={textLayout.x + 4*r/5}
           y={textLayout.y}
           transform={textLayout.transform}
           dy=".35em"
