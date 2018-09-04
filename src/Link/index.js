@@ -111,7 +111,7 @@ export default class Link extends React.PureComponent {
   }
 
   render() {
-    const { styles, linkData, onClick } = this.props;
+    const { styles, linkData, onClick, edgeData } = this.props;
     const { onMouseOver } = this.state;
     const target = linkData.target.parentEdge;
     const { onMouseOverItem } = linkData.target.parentEdge;
@@ -140,7 +140,7 @@ export default class Link extends React.PureComponent {
         */}
         {(onMouseOverItem || onClick) && (
           <path
-            style={{ stroke: 'transparent', cursor: onMouseOverItem ? 'pointer' : null }}
+            style={{ stroke: 'transparent', cursor: onMouseOverItem !== undefined || edgeData !== undefined ? 'pointer' : null }}
             className="linkBase"
             d={this.drawPath()}
             strokeWidth="22"

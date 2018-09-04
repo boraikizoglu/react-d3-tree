@@ -432,7 +432,6 @@ export default class Tree extends React.Component {
     const { translate, scale } = this.internalState.d3;
 
     const subscriptions = { ...nodeSize, ...separation, depthFactor, initialDepth };
-
     return (
       <div className={`rd3t-tree-container ${zoomable ? 'rd3t-grabbable' : undefined}`}>
         <svg className={rd3tSvgClassName} width="100%" height="100%">
@@ -451,6 +450,7 @@ export default class Tree extends React.Component {
                 transitionDuration={transitionDuration}
                 styles={styles.links}
                 onClick={this.handleOnClickEdgeCb}
+                edgeData={linkData.target.parentEdge.data}
               />
             ))}
 
