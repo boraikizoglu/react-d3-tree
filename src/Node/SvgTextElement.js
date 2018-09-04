@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 
 export default class SvgTextElement extends React.PureComponent {
   render() {
-    const { name, nodeStyle, textLayout, attributes, nodeSvgShape: { shapeProps: { r, x, y, centerRectText}} } = this.props;
-    let textX = textLayout.x + 4*r/5;
+    const { name, nodeStyle, textLayout, attributes,  nodeSvgShape: {centerRectText, shapeProps: { r, x, y} } } = this.props;
+    let textX = r ? textLayout.x + 4*r/5 : textLayout.x;
     let textY = textLayout.y;
     if(centerRectText){
-      textX = r ? textLayout.x + 4*r/5 : (x ? x-(x/4) : textLayout.x);
+      textX = x ? x-(x/4) : textLayout.x;
       textY = y ? -1 * y/4 : textLayout.y;
     }
     return (
