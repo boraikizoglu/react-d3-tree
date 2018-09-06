@@ -105,8 +105,8 @@ export default class Link extends React.PureComponent {
     return (currentX + parentX) / 2;
   }
 
-  handleClick(evt){
-    const { linkData: { target: { parentEdge }}} = this.props;
+  handleClick(evt) {
+    const { linkData: { target: { parentEdge } } } = this.props;
     this.props.onClick(parentEdge, evt);
   }
 
@@ -140,7 +140,10 @@ export default class Link extends React.PureComponent {
         */}
         {(onMouseOverItem || onClick) && (
           <path
-            style={{ stroke: 'transparent', cursor: onMouseOverItem !== undefined || edgeData !== undefined ? 'pointer' : null }}
+            style={{
+              stroke: 'transparent',
+              cursor: onMouseOverItem !== undefined || edgeData !== undefined ? 'pointer' : null,
+            }}
             className="linkBase"
             d={this.drawPath()}
             strokeWidth="22"
@@ -156,6 +159,8 @@ export default class Link extends React.PureComponent {
 
 Link.defaultProps = {
   styles: {},
+  onClick: undefined,
+  edgeData: undefined,
 };
 
 Link.propTypes = {
@@ -165,6 +170,8 @@ Link.propTypes = {
     PropTypes.oneOf(['diagonal', 'elbow', 'straight']),
     PropTypes.func,
   ]).isRequired,
+  onClick: PropTypes.func,
+  edgeData: PropTypes.object,
   transitionDuration: PropTypes.number.isRequired,
   styles: PropTypes.object,
 };
